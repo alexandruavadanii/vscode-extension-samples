@@ -141,4 +141,22 @@ export function activate(context: vscode.ExtensionContext) {
 
 		thread.comments = [...thread.comments, newComment];
 	}
+
+	addCommentAfterDelay(0);
+}
+
+async function addCommentAfterDelay(ms: number) {
+	//	Create an untitled, dummy document
+	const doc = await vscode.workspace.openTextDocument({language: "plaintext", content: `we will invoke addComment for this line after ${ms} milliseconds`});
+	const editor = await vscode.window.showTextDocument(doc);
+	const position = new vscode.Position(0, 0);
+	const range = new vscode.Range(position, position);
+	editor.revealRange(range);
+
+	//	Delay for a bit, then invoke `addComment`
+	await new Promise(resolve => setTimeout(resolve, ms));
+	vscode.commands.executeCommand('workbench.action.addComment');
+
+	//	Enable screencast to generate a self-sufficient GIF when reporting this issue
+	vscode.commands.executeCommand('workbench.action.toggleScreencastMode');
 }
